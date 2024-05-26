@@ -1,0 +1,92 @@
+-- Create a single temporary table that combines call_data, caller_info, and device_info
+CREATE OR REPLACE TEMPORARY TABLE temp_combined_data AS
+SELECT 
+    cd.call_date, 
+    cd.call_type, 
+    cd.software_version, 
+    cd.caller_employee_id, 
+    cd.agent_id, 
+    cd.resolved, 
+    cd.escalated_to_tier2, 
+    cd.repeat_caller, 
+    cd.category, 
+    cd.subcategory, 
+    cd.caller_notes, 
+    cd.servicenow_incident_record,
+    ci.alphanumeric_employee_id, 
+    ci.department, 
+    ci.job_code, 
+    ci.active_status, 
+    ci.l1_manager, 
+    ci.l2_manager, 
+    ci.l3_manager, 
+    ci.l4_manager, 
+    ci.l5_manager, 
+    ci.executive_representative, 
+    ci.l1_manager_email, 
+    ci.l2_manager_email, 
+    ci.employee_email, 
+    ci.tenure, 
+    ci.salary,
+    di.device_name, 
+    di.device_type, 
+    di.os_version, 
+    di.last_reboot_date, 
+    di.last_update_date, 
+    di.last_format_date, 
+    di.date_of_password_expiration, 
+    di.most_used_software
+FROM 
+    call_data cd
+LEFT JOIN 
+    caller_info ci
+ON 
+    cd.caller_employee_id = ci.caller_employee_id
+LEFT JOIN 
+    device_info di
+ON 
+    ci.alphanumeric_employee_id = di.alphanumeric_employee_id;
+
+-- Final selection from the temporary combined table with filtering criteria
+SELECT 
+    call_date, 
+    call_type, 
+    software_version, 
+    caller_employee_id, 
+    agent_id, 
+    resolved, 
+    escalated_to_tier2, 
+    repeat_caller, 
+    category, 
+    subcategory, 
+    caller_notes, 
+    servicenow_incident_record,
+    alphanumeric_employee_id, 
+    department, 
+    job_code, 
+    active_status, 
+    l1_manager, 
+    l2_manager, 
+    l3_manager, 
+    l4_manager, 
+    l5_manager, 
+    executive_representative, 
+    l1_manager_email, 
+    l2_manager_email, 
+    employee_email, 
+    tenure, 
+    salary,
+    device_name, 
+    device_type, 
+    os_version, 
+    last_reboot_date, 
+    last_update_date, 
+    last_format_date, 
+    date_of_password_expiration, 
+    most_used_software
+FROM 
+    temp_combined_data
+WHERE 
+    call_date BETWEEN '2024-05-01' AND '2024-05-31'  -- Filter calls within May 2024
+    AND resolved = TRUE                              -- Only include calls that are resolved
+    AND escalated_to_tier2 = FALSE;                  -- Only include calls that were not escalated to Tier 2 support
