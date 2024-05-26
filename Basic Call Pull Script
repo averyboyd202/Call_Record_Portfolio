@@ -1,0 +1,41 @@
+-- Create the table 'call_data' with the specified columns
+CREATE OR REPLACE TABLE call_data (
+    call_date TIMESTAMP,               -- Date and time of the call
+    call_type STRING,                  -- Type of the call (e.g., Technical, Support)
+    software_version STRING,           -- Software version used during the call
+    caller_employee_id STRING,         -- ID of the caller (employee)
+    agent_id STRING,                   -- ID of the agent handling the call
+    resolved BOOLEAN,                  -- Call resolved status (TRUE if resolved, FALSE if not)
+    escalated_to_tier2 BOOLEAN,        -- Whether the call was escalated to Tier 2 support (TRUE/FALSE)
+    repeat_caller BOOLEAN,             -- Whether the caller is a repeat caller (TRUE/FALSE)
+    category STRING,                   -- Category of the call (e.g., Software, Hardware)
+    subcategory STRING,                -- Subcategory of the call (e.g., Installation, Replacement)
+    caller_notes STRING,               -- Notes taken during the call
+    servicenow_incident_record STRING  -- ServiceNow incident record associated with the call
+);
+
+-- Insert sample data into the 'call_data' table
+INSERT INTO call_data (call_date, call_type, software_version, caller_employee_id, agent_id, resolved, escalated_to_tier2, repeat_caller, category, subcategory, caller_notes, servicenow_incident_record)
+VALUES 
+    ('2024-05-26 09:15:00', 'Technical', '1.0.0', 'E12345', 'A67890', TRUE, FALSE, FALSE, 'Software', 'Installation', 'Caller reported installation issues', 'INC000001'),
+    ('2024-05-26 10:30:00', 'Support', '1.2.3', 'E54321', 'A09876', FALSE, TRUE, TRUE, 'Hardware', 'Replacement', 'Caller requested hardware replacement', 'INC000002');
+
+-- Select data from the 'call_data' table
+-- This query retrieves call records from May 2024 that are resolved and were not escalated to Tier 2 support
+SELECT 
+    call_date, 
+    call_type, 
+    software_version, 
+    caller_employee_id, 
+    agent_id, 
+    resolved, 
+    escalated_to_tier2, 
+    repeat_caller, 
+    category, 
+    subcategory, 
+    caller_notes, 
+    servicenow_incident_record
+FROM call_data
+WHERE call_date BETWEEN '2024-05-01' AND '2024-05-31'  -- Filter calls within May 2024
+  AND resolved = TRUE                                  -- Only include calls that are resolved
+  AND escalated_to_tier2 = FALSE;                      -- Only include calls that were not escalated to Tier 2 support
